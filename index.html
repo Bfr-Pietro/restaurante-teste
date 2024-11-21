@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante Delícia</title>
+    <style>
+        /* Geral */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Cabeçalho */
+        header {
+            background: #ff6f00;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        
+        header:hover {
+            background-color: #e65c00; /* Cor de destaque no hover */
+        }
+
+        .logo img {
+            height: 60px;
+            margin-right: 20px;
+        }
+
+        .header-text {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .navbar {
+            display: flex;
+            list-style: none;
+        }
+
+        .navbar li {
+            margin-left: 30px;
+            cursor: pointer;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar li:hover {
+            color: #f8f8f8;
+            text-decoration: underline;
+        }
+
+        /* Menu */
+        .menu {
+            margin: 20px auto;
+            max-width: 1000px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu h2 {
+            margin-bottom: 20px;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h3 {
+            color: #ff6f00;
+        }
+
+        /* Produto */
+        .product {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product:last-child {
+            border-bottom: none;
+        }
+
+        .product:hover {
+            background-color: rgb(246, 246, 246);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .product img {
+            max-width: 100px;
+            border-radius: 8px;
+        }
+
+        .product-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .product-info h3 {
+            margin: 0;
+        }
+
+        .product-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .product-price {
+            color: #ff6f00;
+            font-weight: bold;
+        }
+
+        /* Carrinho */
+        .cart-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff6f00;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .cart-count {
+            font-size: 16px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cart-modal.active {
+            display: flex;
+        }
+
+        .cart {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .cart h2 {
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .cart textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .cart button {
+            background: #ff6f00;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart button:hover {
+            background: #e65c00;
+        }
+
+        /* Fullscreen */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+        }
+
+        .fullscreen-content {
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+            color: white;
+        }
+
+        .fullscreen-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .close-fullscreen {
+            margin-top: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-to-cart {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-to-cart:hover {
+            background: #218838;
+        }
+
+        .options {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .options label {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .options span {
+            margin-left: 10px;
+            color: #ff6f00;
+        }
+
+        /* Seções Sobre e Contato */
+        .section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .section h2 {
+            color: #ff6f00;
+            margin-bottom: 20px;
+        }
+
+        .section p {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Sobre */
+        #sobre {
+            background-color: #fff;
+        }
+
+        /* Contato */
+        #contato {
+            background-color: #f9f9f9;
+        }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar {
+                flex-direction: column;
+                margin: 0;
+                margin-top: 10px;
+                padding: 0;
+                margin-right: 7vw;
+            }
+
+            .logo img {
+                height: 50px;
+                margin: 0;
+            }
+
+            .product {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .product img {
+                max-width: 80px;
+            }
+
+            .product-info {
+                margin-left: 0;
+            }
+
+            .cart-button {
+                bottom: 10px;
+                right: 10px;
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .cart-modal {
+                padding: 20px;
+            }
+
+            .cart {
+                width: 90%;
+                max-width: 500px;
+            }
+
+            .fullscreen-content {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            .fullscreen-content img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-info h3 {
+                font-size: 16px;
+            }
+
+            .cart {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .cart-item {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <header>
+        <div class="logo">
+            <img src="assets/imgs/BFR.png" alt="Logo">
+        </div>
+        <div class="header-text">
+            Restaurante Delícia
+        </div>
+        <nav>
+            <ul class="navbar">
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Menu -->
+    <div class="menu">
+        <div class="category">
+            <h3>Pratos Principais</h3>
+            <div class="product" onclick="openFullscreen('Prato 1', 'Prato com Arroz, Feijão, Legumes, Verduras e Ovos Cozidos', 25.50, 'assets/imgs/prato 1.png')">
+                <img src="assets/imgs/prato 1.png" alt="Prato 1">
+                <div class="product-info">
+                    <h3>Prato 1</h3>
+                    <p>Prato com Arroz, Feijão, Legumes, Verduras e Ovos Cozidos</p>
+                    <div class="product-price">R$ 25,50</div>
+                </div>
+            </div>
+            <div class="product" onclick="openFullscreen('Salada da Casa', 'Uma deliciosa salada feita com legumes e verduras frescas', 35.00, 'assets/imgs/prato 2.png')">
+                <img src="assets/imgs/prato 2.png" alt="Prato 2">
+                <div class="product-info">
+                    <h3>Salada da Casa</h3>
+                    <p>Uma deliciosa salada feita com legumes e verduras frescas</p>
+                    <div class="product-price">R$ 35,00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h3>Bebidas</h3>
+            <div class="product" onclick="openFullscreen('Suco Natural', 'Suco fresco e delicioso', 10.00, 'assets/imgs/suco natural.png')">
+                <img src="assets/imgs/suco natural.png" alt="Suco Natural">
+                <div class="product-info">
+                    <h3>Suco Natural</h3>
+                    <p>Suco fresco e delicioso.</p>
+                    <div class="product-price">R$ 10,00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção Sobre -->
+    <div id="sobre" class="section">
+        <h2>Sobre nós</h2>
+        <p>O Restaurante Delícia oferece pratos feitos com ingredientes frescos e de qualidade. Nosso objetivo é proporcionar uma experiência única aos nossos clientes, com um ambiente perfeito para qualquer ocasião.</p>
+    </div>
+
+    <!-- Seção Contato -->
+    <div id="contato" class="section">
+        <h2>Entre em Contato</h2>
+        <p>Para dúvidas, sugestões ou para fazer um pedido, entre em contato conosco através do nosso número de WhatsApp ou nos envie um e-mail!</p>
+        <p><strong>WhatsApp:</strong> (11) 99999-9999</p>
+        <p><strong>E-mail:</strong> contato@restaurantedelicia.com.br</p>
+    </div>
+
+    <!-- Carrinho -->
+    <button class="cart-button" onclick="toggleCart()">🛒 <span id="cart-count" class="cart-count">0</span></button>
+
+    <!-- Modal Carrinho -->
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart">
+            <h2>Carrinho</h2>
+            <div id="cart-items"></div>
+            <div class="total" id="total-price">Total: R$ 0.00</div>
+            <textarea id="cart-notes" placeholder="Observações sobre o pedido..."></textarea>
+            <button onclick="makeOrder()">Finalizar Pedido</button>
+            <button onclick="toggleCart()">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal Fullscreen Produto -->
+    <div id="fullscreen-modal" class="fullscreen-modal">
+        <div class="fullscreen-content">
+            <img id="fullscreen-img" src="" alt="Produto">
+            <h3 id="fullscreen-title"></h3>
+            <p id="fullscreen-description"></p>
+            <div class="options" id="fullscreen-options"></div>
+            <label for="product-quantity">Quantidade:</label>
+            <input type="number" id="product-quantity" value="1" min="1">
+            <button class="add-to-cart" onclick="addToCartFromFullscreen()">Adicionar ao Carrinho</button>
+            <button class="close-fullscreen" onclick="closeFullscreen()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let currentProduct = {};
+
+        function toggleCart() {
+            const modal = document.getElementById("cart-modal");
+            modal.classList.toggle("active");
+        }
+
+        function openFullscreen(title, description, price, img) {
+            currentProduct = { title, description, price };
+            const modal = document.getElementById("fullscreen-modal");
+            document.getElementById("fullscreen-title").textContent = title;
+            document.getElementById("fullscreen-description").textContent = description;
+            document.getElementById("fullscreen-img").src = img;
+            document.getElementById("fullscreen-options").innerHTML = `
+                <label><input type="checkbox" class="additional-option" data-price="3" value="Queijo"> Queijo (R$ 3,00)</label>
+                <label><input type="checkbox" class="additional-option" data-price="5" value="Bacon"> Bacon (R$ 5,00)</label>
+            `;
+            document.getElementById("product-quantity").value = 1;
+            modal.classList.add("active");
+        }
+
+        function closeFullscreen() {
+            const modal = document.getElementById("fullscreen-modal");
+            modal.classList.remove("active");
+        }
+
+        function addToCartFromFullscreen() {
+            const quantity = parseInt(document.getElementById("product-quantity").value, 10);
+            const selectedOptions = [...document.querySelectorAll(".additional-option:checked")];
+            const totalAdditionsPrice = selectedOptions.reduce((sum, option) => sum + parseFloat(option.getAttribute('data-price')), 0);
+
+            const product = {
+                item: currentProduct.title,
+                price: currentProduct.price + totalAdditionsPrice,
+                quantity: quantity,
+                options: selectedOptions.map(option => option.value),
+            };
+            cart.push(product);
+            updateCart();
+            closeFullscreen();
+        }
+
+        function updateCart() {
+            const cartCount = document.getElementById("cart-count");
+            const cartItems = document.getElementById("cart-items");
+            const totalPrice = document.getElementById("total-price");
+
+            cartItems.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((product, index) => {
+                const div = document.createElement("div");
+                div.classList.add("cart-item");
+                div.innerHTML = `
+                    ${product.item} - R$ ${product.price.toFixed(2)} x ${product.quantity}
+                    <button onclick="removeFromCart(${index})">Remover</button>
+                `;
+                cartItems.appendChild(div);
+                total += product.price * product.quantity;
+            });
+
+            cartCount.textContent = cart.length;
+            totalPrice.textContent = `Total: R$ ${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function makeOrder() {
+            if (cart.length === 0) {
+                alert("Seu carrinho está vazio!");
+                return;
+            }
+            const notes = document.getElementById("cart-notes").value.trim();
+            const orderItems = cart.map(product => {
+                const additions = product.options.length > 0 ? ` (Adicionais: ${product.options.join(', ')})` : '';
+                return `${product.item} - R$ ${product.price.toFixed(2)} x ${product.quantity}${additions}`;
+            }).join("\n");
+
+            const total = cart.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+
+            let message = `Olá, gostaria de fazer o seguinte pedido:\n\n${orderItems}\n\nTotal: R$ ${total.toFixed(2)}`;
+            if (notes) {
+                message += `\n\nObservações: ${notes}`;
+            }
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappNumber = "5515997672075"; // Substitua pelo número do restaurante
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
+        }
+    </script>
+
+</body>
+</html>
